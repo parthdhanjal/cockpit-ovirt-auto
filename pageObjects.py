@@ -7,13 +7,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class oVirtDashboardPageObjects():
 
-    URL = "https://10.70.42.231:9090"
+    URL = ""
     ACCEPT_UNTRUSTED_CERTS = True
 
     loginUserInput = "login-user-input"
     loginUserInputValue = "root"
     loginPasswordInput = "login-password-input"
-    loginPasswordInputValue = "redhat"
+    loginPasswordInputValue = ""
     loginButton = "login-button"
 
     heFrame = 1
@@ -24,6 +24,9 @@ class oVirtDashboardPageObjects():
 
     ThreeNodeDepButton = ".col-sm-3 > .btn"
     ThreeNodeDepButtonText = "Run Gluster Wizard"
+
+    SingleNodeDepButton = ".col-sm-6 > .btn"
+    SingleNodeDepButtonText = "Run Gluster Wizard For Single Node"
 
     host1Input = ".form-horizontal:nth-child(1) > div:nth-child(1) > .form-group .form-control"
     host1InputValue = "h"
@@ -137,10 +140,18 @@ class oVirtDashboardPageObjects():
         assert ThreeNodeDep.text == self.ThreeNodeDepButtonText
         ThreeNodeDep.click()
 
+    def startSingleNodeWizard(self, driver):
+        SingleNodeDep = driver.find_element_by_css_selector(self.SingleNodeDepButton)
+        assert SingleNodeDep.text == self.SingleNodeDepButtonText
+        SingleNodeDep.click()
+
     def sendHostValuesForThreeNodeDep(self, driver, h1, h2, h3):
         driver.find_element_by_css_selector(self.host1Input).send_keys(h1)
         driver.find_element_by_css_selector(self.host2Input).send_keys(h2)
         driver.find_element_by_css_selector(self.host3Input).send_keys(h3)
+
+    def sendHostValuesForSingleNodeDep(self, driver, h1):
+        driver.find_element_by_css_selector(self.host1Input).send_keys(h1)
 
     def wizardNextClick(self, driver):
         driver.find_element_by_css_selector(self.wizardNextButton).click()
