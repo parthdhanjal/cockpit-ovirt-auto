@@ -3,6 +3,7 @@ import pageObjects
 odpo = pageObjects.oVirtDashboardPageObjects()
 
 def test_gluster_deployment_fail_check():
+    odpo.setupLogFile("test_gluster_deployment_fail_check")
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -31,6 +32,7 @@ def test_gluster_deployment_fail_check():
     odpo.driver_close(driver)
 
 def test_gluster_empty_host_validation_check():
+    odpo.setupLogFile("test_gluster_empty_host_validation_check")
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -45,6 +47,7 @@ def test_gluster_empty_host_validation_check():
     odpo.driver_close(driver)
 
 def test_gluster_fqdn_validation_check():
+    odpo.setupLogFile("test_gluster_fqdn_validation_check")
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -70,6 +73,7 @@ def test_gluster_fqdn_validation_check():
     odpo.driver_close(driver)
 
 def test_gluster_volume_validation_check():
+    odpo.setupLogFile("test_gluster_volume_validation_check")
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -93,6 +97,7 @@ def test_gluster_volume_validation_check():
     odpo.driver_close(driver)
 
 def test_gluster_vdo_present():
+    odpo.setupLogFile("test_gluster_vdo_present")
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -115,6 +120,7 @@ def test_gluster_vdo_present():
     odpo.driver_close(driver)
 
 def test_gluster_single_node_deployment_fail_check():
+    odpo.setupLogFile("test_gluster_single_node_deployment_fail_check")
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)

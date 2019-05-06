@@ -1,5 +1,8 @@
-import unittest
+import os
 import time
+import logging
+import unittest
+from datetime import datetime as datetime
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -103,157 +106,318 @@ class oVirtDashboardPageObjects():
     def time_sleep(self, sleepTime):
         time.sleep(sleepTime)
 
+    def setupLogFile(self, filename):
+        try:
+            os.system("mkdir test_logs")
+        except:
+            print("Directory already exists")
+        finally:
+            fileName = "test_logs/"+filename+".log"
+            exists = os.path.isfile(fileName)
+            if exists:
+                print("Creating backup of existing log file")
+                modifiedTime = os.path.getmtime(fileName)
+                timestamp = datetime.fromtimestamp(modifiedTime).strftime("%d-%m-%Y_%H:%M:%S")
+                os.rename(fileName,fileName+"_"+timestamp)
+                print("Created backup file: ", fileName+"_"+timestamp)
+                print("Creating log file:", fileName)
+                logging.basicConfig(filename=fileName, filemode="w+", level=logging.DEBUG)
+                logging.info("Starting test %s", fileName)
+            else:
+                print("No existing log file found, creating log file: ", fileName)
+                logging.basicConfig(filename=fileName, filemode="w+", level=logging.DEBUG)
+                logging.info("Starting test %s", fileName)
+
     def setup(self):
-        profile = webdriver.FirefoxProfile()
-        profile.accept_untrusted_certs = self.ACCEPT_UNTRUSTED_CERTS
-        driver = webdriver.Firefox(firefox_profile=profile)
-        return driver
+        try:
+            logging.info("Starting Setup")
+            profile = webdriver.FirefoxProfile()
+            profile.accept_untrusted_certs = self.ACCEPT_UNTRUSTED_CERTS
+        except:
+            logging.error("Unable to setup Profile variables for webdriver")
+        try:
+            logging.info("Setting up the driver")
+            driver = webdriver.Firefox(firefox_profile=profile)
+            return driver
+        except:
+            logging.error("Unable to Setup the driver")
 
     def open_page(self, driver):
-        driver.get(self.URL)
+        try:
+            logging.info("Opening URL")
+            driver.get(self.URL)
+        except:
+            logging.error("Error opening URL")
 
     def login(self, driver):
-        wait = WebDriverWait(driver, 10)
-        element = wait.until(EC.visibility_of_element_located((By.ID, self.loginUserInput)))
-        loginUserInput = driver.find_element_by_id(self.loginUserInput)
-        loginUserInput.send_keys(self.loginUserInputValue)
-        loginPasswordInput = driver.find_element_by_id(self.loginPasswordInput)
-        loginPasswordInput.send_keys(self.loginPasswordInputValue)
-        loginButton = driver.find_element_by_id(self.loginButton)
-        loginButton.click()
+        try:
+            logging.info("Waiting for the login page to load")
+            wait = WebDriverWait(driver, 10)
+            element = wait.until(EC.visibility_of_element_located((By.ID, self.loginUserInput)))
+        except:
+            logging.error("User Login Input element not visible")
+        try:
+            logging.info("Inputting username")
+            loginUserInput = driver.find_element_by_id(self.loginUserInput)
+            loginUserInput.send_keys(self.loginUserInputValue)
+        except:
+            logging.error("User Login Input element not present")
+        try:
+            logging.info("Inputting password")
+            loginPasswordInput = driver.find_element_by_id(self.loginPasswordInput)
+            loginPasswordInput.send_keys(self.loginPasswordInputValue)
+        except:
+            logging.error("User Login Password element not present")
+        try:
+            logging.info("Clicking on submit")
+            loginButton = driver.find_element_by_id(self.loginButton)
+            loginButton.click()
+        except:
+            logging.error("User Login Button element not present")
 
     def switchFrame(self, driver, frameRef):
-        driver.switch_to_frame(frameRef)
+        try:
+            logging.info("Swtiching frames to %s", frameRef)
+            driver.switch_to.frame(frameRef)
+        except:
+            logging.error("Not able to switch frame. Check if correct frame has been passed as argument")
 
     def assertHostedEngine(self, driver):
-        HostedEngine = driver.find_element_by_link_text(self.hostedEngineButtonText)
-        assert HostedEngine.text == self.hostedEngineButtonText
-        HostedEngine.click()
+        try:
+            logging.info("Asserting Hosted Engine")
+            HostedEngine = driver.find_element_by_link_text(self.hostedEngineButtonText)
+            assert HostedEngine.text == self.hostedEngineButtonText
+            HostedEngine.click()
+        except:
+            logging.error("Hosted Engine Element not visible")
 
     def startGlusterDeployment(self, driver):
-        GlusterWizard = driver.find_element_by_xpath(self.glusterWizardButton)
-        assert GlusterWizard.text == self.glusterWizardButtonText
-        GlusterWizard.click()
+        try:
+            logging.info("Starting Gluster Deployment Wizard")
+            GlusterWizard = driver.find_element_by_xpath(self.glusterWizardButton)
+            assert GlusterWizard.text == self.glusterWizardButtonText
+            GlusterWizard.click()
+        except:
+            logging.error("Unable to locate Gluster Deployment button")
 
     def startThreeNodeWizard(self, driver):
-        ThreeNodeDep = driver.find_element_by_css_selector(self.ThreeNodeDepButton)
-        assert ThreeNodeDep.text == self.ThreeNodeDepButtonText
-        ThreeNodeDep.click()
+        try:
+            logging.info("Starting three node deployment")
+            ThreeNodeDep = driver.find_element_by_css_selector(self.ThreeNodeDepButton)
+            assert ThreeNodeDep.text == self.ThreeNodeDepButtonText
+            ThreeNodeDep.click()
+        except:
+            logging.error("Three Node Deployment Button not found")
 
     def startSingleNodeWizard(self, driver):
-        SingleNodeDep = driver.find_element_by_css_selector(self.SingleNodeDepButton)
-        assert SingleNodeDep.text == self.SingleNodeDepButtonText
-        SingleNodeDep.click()
+        try:
+            logging.info("Starting Single Node Deployment")
+            SingleNodeDep = driver.find_element_by_css_selector(self.SingleNodeDepButton)
+            assert SingleNodeDep.text == self.SingleNodeDepButtonText
+            SingleNodeDep.click()
+        except:
+            logging.error("Single Node Deployment Button not found")
 
     def sendHostValuesForThreeNodeDep(self, driver, h1, h2, h3):
-        driver.find_element_by_css_selector(self.host1Input).send_keys(h1)
-        driver.find_element_by_css_selector(self.host2Input).send_keys(h2)
-        driver.find_element_by_css_selector(self.host3Input).send_keys(h3)
+        try:
+            logging.info("Sending host values for three node deployment")
+            driver.find_element_by_css_selector(self.host1Input).send_keys(h1)
+            driver.find_element_by_css_selector(self.host2Input).send_keys(h2)
+            driver.find_element_by_css_selector(self.host3Input).send_keys(h3)
+        except:
+            logging.error("Unable to send values to three node deployment")
 
     def sendHostValuesForSingleNodeDep(self, driver, h1):
-        driver.find_element_by_css_selector(self.host1Input).send_keys(h1)
+        try:
+            logging.info("Sending host values for single node deployment")
+            driver.find_element_by_css_selector(self.host1Input).send_keys(h1)
+        except:
+            logging.error("Unable to send values to single node deployment")
 
     def wizardNextClick(self, driver):
-        driver.find_element_by_css_selector(self.wizardNextButton).click()
+        try:
+            logging.info("Clicking Next Button")
+            driver.find_element_by_css_selector(self.wizardNextButton).click()
+        except:
+            logging.error("Error Clicking Next button")
 
     def fqdnAssertCheck(self, driver):
-        fqdnAssert = driver.find_element_by_css_selector(self.fqdnAssertBox)
-        assert fqdnAssert.text == self.fqdnAssertBoxValue
+        try:
+            logging.info("FQDN Assert Check")
+            fqdnAssert = driver.find_element_by_css_selector(self.fqdnAssertBox)
+            assert fqdnAssert.text == self.fqdnAssertBoxValue
+        except:
+            logging.error("FQDN Assert Check failing")
 
     def packageAssertCheck(self, driver):
-        packageAssert = driver.find_element_by_css_selector(self.packageAssertBox)
-        assert packageAssert.text == self.packageAssertBoxValue
+        try:
+            logging.info("Package Assert Check")
+            packageAssert = driver.find_element_by_css_selector(self.packageAssertBox)
+            assert packageAssert.text == self.packageAssertBoxValue
+        except:
+            logging.error("Package Assert Check failing")
 
     def volumeAssertCheck(self, driver, click):
-        AddVolume = driver.find_element_by_css_selector(self.addVolumeButton)
-        assert AddVolume.text == self.addVolumeButtonValue
-        if(click):
-            AddVolume.click()
+        try:
+            logging.info("Volume Assert Check")
+            AddVolume = driver.find_element_by_css_selector(self.addVolumeButton)
+            assert AddVolume.text == self.addVolumeButtonValue
+            logging.info("Add volume click %s", click)
+            if(click):
+                logging.info("Add volume click check")
+                AddVolume.click()
+        except:
+            logging.error("Volume Assert and adding new volume failing")
 
     def volumeAddCheck(self, driver, volName):
-        EmptyVolumeName = driver.find_element_by_css_selector(self.EmptyVolumeName)
-        assert EmptyVolumeName.text == self.EmptyVolumeNameText
-        EmptyVolumeName.send_keys(volName)
+        try:
+            logging.info("Volume Add check")
+            EmptyVolumeName = driver.find_element_by_css_selector(self.EmptyVolumeName)
+            assert EmptyVolumeName.text == self.EmptyVolumeNameText
+            EmptyVolumeName.send_keys(volName)
+        except:
+            logging.error("Volume Add check failing")
 
     def raidAssertCheck(self, driver):
-        RaidInformationTitle = driver.find_element_by_css_selector(self.RaidInformationTitle)
-        assert RaidInformationTitle.text == self.RaidInformationTitleText
+        try:
+            logging.info("Raid Assert Check")
+            RaidInformationTitle = driver.find_element_by_css_selector(self.RaidInformationTitle)
+            assert RaidInformationTitle.text == self.RaidInformationTitleText
+        except:
+            logging.error("Raid Assert check failing")
 
     def raidTypeChange(self, driver, raidType):
-        RaidTypeDropDown = driver.find_element_by_css_selector(self.RaidTypeDropDown)
-        assert RaidTypeDropDown.text == self.RaidTypeDropDownText
-        RaidTypeDropDown.click()
-        driver.find_element_by_link_text(raidType).click()
-        assert RaidTypeDropDown.text == raidType
+        try:
+            logging.info("Changing Raid Type")
+            RaidTypeDropDown = driver.find_element_by_css_selector(self.RaidTypeDropDown)
+            assert RaidTypeDropDown.text == self.RaidTypeDropDownText
+            RaidTypeDropDown.click()
+            driver.find_element_by_link_text(raidType).click()
+            assert RaidTypeDropDown.text == raidType
+        except:
+            logging.error("Unable to change Raid type")
 
     def assertPreview(self, driver):
-        ansibleConfig = driver.find_element_by_css_selector(self.ansibleConfigPreview)
-        print ansibleConfig.text
-        DeploymentMsg = driver.find_element_by_css_selector(self.DeploymentMsg)
-        assert DeploymentMsg.text == self.DeploymentMsgText
+        try:
+            logging.info("Preview Assert")
+            ansibleConfig = driver.find_element_by_css_selector(self.ansibleConfigPreview)
+            logging.info(ansibleConfig.text)
+            DeploymentMsg = driver.find_element_by_css_selector(self.DeploymentMsg)
+            assert DeploymentMsg.text == self.DeploymentMsgText
+        except:
+            logging.error("Preview Assert failing")
 
     def deployGluster(self, driver):
-        driver.find_element_by_css_selector(self.FinishButton).click()
+        try:
+            logging.info("Clicking Deploy Gluster Button")
+            driver.find_element_by_css_selector(self.FinishButton).click()
+        except:
+            logging.error("Unable to press deploy button")
 
     def spinnerCheck(self, driver):
-        spinner = driver.find_element_by_css_selector(self.spinner)
+        try:
+            logging.info("Checking for spinner element")
+            spinner = driver.find_element_by_css_selector(self.spinner)
+        except:
+            logging.error("Unable to find Spinner Element")
         try:
             while spinner.is_displayed():
-                print "check: "
+                logging.info("check: ")
         except:
-            print "Element not visible"
+            logging.error("Element not visible")
 
     def deploymentFailCheck(self, driver):
-        DeploymentMsg = driver.find_element_by_css_selector(self.DeploymentMsgFail)
-        assert DeploymentMsg.text == self.DeploymentMsgFailText
+        try:
+            logging.info("Checking for deployment fail message")
+            DeploymentMsg = driver.find_element_by_css_selector(self.DeploymentMsgFail)
+            assert DeploymentMsg.text == self.DeploymentMsgFailText
+        except:
+            logging.error("Unable to find deployment fail message")
 
     def emptyHostAssertCheck(self, driver):
-        host1 = driver.find_element_by_css_selector(self.host1Error)
-        host2 = driver.find_element_by_css_selector(self.host2Error)
-        host3 = driver.find_element_by_css_selector(self.host3Error)
+        try:
+            logging.info("Asserting Empty Host Validation Check")
+            host1 = driver.find_element_by_css_selector(self.host1Error)
+            host2 = driver.find_element_by_css_selector(self.host2Error)
+            host3 = driver.find_element_by_css_selector(self.host3Error)
 
-        assert host1.text == self.hostEmptyErrorValue
-        assert host2.text == self.hostEmptyErrorValue
-        assert host3.text == self.hostEmptyErrorValue
+            assert host1.text == self.hostEmptyErrorValue
+            assert host2.text == self.hostEmptyErrorValue
+            assert host3.text == self.hostEmptyErrorValue
+        except:
+            logging.error("Empty Host validation failing")
 
     def handleSameFqdnAsHostCheck(self, driver):
-        handleSameFqdnAsHostButton = driver.find_element_by_id(self.handleSameFqdnAsHost)
-        handleSameFqdnAsHostButton.click()
+        try:
+            logging.info("Checking for handle same FQDN button")
+            handleSameFqdnAsHostButton = driver.find_element_by_id(self.handleSameFqdnAsHost)
+            handleSameFqdnAsHostButton.click()
+        except:
+            logging.error("Handle Same FQDN check failing")
 
     def fqdnUnreachableErrorCheck(self, driver):
-        fqdn1_Error = driver.find_element_by_css_selector(self.fqdn1Error)
-        fqdn2_Error = driver.find_element_by_css_selector(self.fqdn2Error)
+        try:
+            logging.info("FQDN unreachable error check")
+            fqdn1_Error = driver.find_element_by_css_selector(self.fqdn1Error)
+            fqdn2_Error = driver.find_element_by_css_selector(self.fqdn2Error)
 
-        assert fqdn1_Error.text == self.fqdnUnreachableError
-        assert fqdn2_Error.text == self.fqdnUnreachableError
+            assert fqdn1_Error.text == self.fqdnUnreachableError
+            assert fqdn2_Error.text == self.fqdnUnreachableError
+        except:
+            logging.error("FQDN unreachable error check failing")
 
     def fqdnInput(self, driver, fqdn1, fqdn2):
-        fqdn1_textArea = driver.find_element_by_id(self.fqdn1Input)
-        fqdn1_textArea.send_keys(fqdn1)
-        fqdn2_textArea = driver.find_element_by_css_selector(self.fqdn2Input)
-        fqdn2_textArea.send_keys(fqdn2)
+        try:
+            logging.info("FQDN Input")
+            fqdn1_textArea = driver.find_element_by_id(self.fqdn1Input)
+            fqdn1_textArea.send_keys(fqdn1)
+            fqdn2_textArea = driver.find_element_by_css_selector(self.fqdn2Input)
+            fqdn2_textArea.send_keys(fqdn2)
+        except:
+            logging.error("Unable to find FQDN input")
 
     def fqdnSameError(self, driver):
-        fqdnSameError = driver.find_element_by_css_selector(self.fqdnError)
-        assert fqdnSameError.text == self.fqdnSameErrorValue
+        try:
+            logging.info("Checking for same FQDN error")
+            fqdnSameError = driver.find_element_by_css_selector(self.fqdnError)
+            assert fqdnSameError.text == self.fqdnSameErrorValue
+        except:
+            logging.error("Unable to check same FQDN error")
 
     def fqdn2Clear(self, driver):
-        fqdn2_textArea = driver.find_element_by_css_selector(self.fqdn2Input)
-        fqdn2_textArea.clear()
+        try:
+            logging.info("Clearing FQDN#2")
+            fqdn2_textArea = driver.find_element_by_css_selector(self.fqdn2Input)
+            fqdn2_textArea.clear()
+        except:
+            logging.error("Unable to locate FQDN#2")
 
     def fqdnEmptyError(self, driver):
-        fqdnEmptyError = driver.find_element_by_css_selector(self.fqdnError)
-        assert fqdnEmptyError.text == self.fqdnEmptyError
+        try:
+            logging.info("Checking for empty FQDN error")
+            fqdnEmptyError = driver.find_element_by_css_selector(self.fqdnError)
+            assert fqdnEmptyError.text == self.fqdnEmptyError
+        except:
+            logging.error("Empty FQDN error assert failing")
 
     def emptyVolumeCheck(self, driver):
-        assert driver.find_element_by_css_selector(self.ErrorVolumeName).text == self.ErrorVolumeNameValue
-        assert driver.find_element_by_css_selector(self.ErrorGlusterBrickDirectory).text == self.ErrorGlusterBrickDirectory
+        try:
+            logging.info("Checking for empty volume errors")
+            assert driver.find_element_by_css_selector(self.ErrorVolumeName).text == self.ErrorVolumeNameValue
+            assert driver.find_element_by_css_selector(self.ErrorGlusterBrickDirectory).text == self.ErrorGlusterBrickDirectory
+        except:
+            logging.error("Empty volume check assert failing")
 
     def deleteVolumeRow(self, driver, deleteVolume):
-        driver.find_element_by_css_selector(deleteVolume).click()
+        try:
+            logging.info("Deleting extra volume row")
+            driver.find_element_by_css_selector(deleteVolume).click()
+        except:
+            logging.error("Unable to locate delete row button")
 
     def vdoCheck(self, driver):
         try:
+            logging.info("Checking for VDO changes")
             vdocheck = driver.find_element_by_css_selector(self.vdoCheckBox)
             vdocheck.click()
 
@@ -270,8 +434,9 @@ class oVirtDashboardPageObjects():
             assert 10*int(h3Size.get_attribute('value')) == int(h3VdoSize.get_attribute('value'))
 
         except:
-            print "VDO not present"
+            logging.error("VDO not present")
 
     def driver_close(self, driver):
+        logging.info("Closing driver and quiting")
         driver.close()
         driver.quit()
