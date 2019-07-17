@@ -10,13 +10,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class oVirtDashboardPageObjects():
 
-    URL = "https://tendrl25.lab.eng.blr.redhat.com:9090"
+    URL = ""
     ACCEPT_UNTRUSTED_CERTS = True
 
     loginUserInput = "login-user-input"
     loginUserInputValue = "root"
     loginPasswordInput = "login-password-input"
-    loginPasswordInputValue = "redhat123"
+    loginPasswordInputValue = ""
     loginButton = "login-button"
 
     heFrame = 1
@@ -129,13 +129,13 @@ class oVirtDashboardPageObjects():
     continueToHostedEngineButtonSelector = ".btn-lg"
 
     vmFqdnInput = "he-engine-fqdn-input"
-    vmFqdnInputValue = "tendrl-engine5.lab.eng.blr.redhat.com"
+    vmFqdnInputValue = ""
 
     vmFqdnSpinner = ".form-group:nth-child(2) .spinner"
     vmFqdnValidateMsg = "he-validating-engine-fqdn-msg"
 
     vmFqdnMacAddInput = "he-engine-mac-address-input"
-    vmFqdnMacAddInputValue = "00:16:3e:65:f8:3b"
+    vmFqdnMacAddInputValue = ""
 
     vmPasswordInput = "he-cloudinit-root-pwd-input"
     vmPasswordInputValue = "test123"

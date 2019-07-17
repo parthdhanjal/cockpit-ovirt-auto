@@ -156,7 +156,7 @@ def test_gluster_three_node_deployment_check():
     odpo.time_sleep(10)
     odpo.startGlusterDeployment(driver)
     odpo.startThreeNodeWizard(driver)
-    odpo.sendHostValuesForThreeNodeDep(driver, 'tendrl25.lab.eng.blr.redhat.com', 'tendrl26.lab.eng.blr.redhat.com', 'tendrl27.lab.eng.blr.redhat.com')
+    odpo.sendHostValuesForThreeNodeDep(driver, h1, h2, h3)
     odpo.wizardNextClick(driver)
     odpo.fqdnAssertCheck(driver)
     odpo.handleSameFqdnAsHostCheck(driver)
