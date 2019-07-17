@@ -3,7 +3,7 @@ import pageObjects
 odpo = pageObjects.oVirtDashboardPageObjects()
 
 def test_gluster_deployment_fail_check():
-    odpo.setupLogFile("test_gluster_deployment_fail_check")
+    odpo.setupLogFile('test_gluster_deployment_fail_check')
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -32,7 +32,7 @@ def test_gluster_deployment_fail_check():
     odpo.driver_close(driver)
 
 def test_gluster_empty_host_validation_check():
-    odpo.setupLogFile("test_gluster_empty_host_validation_check")
+    odpo.setupLogFile('test_gluster_empty_host_validation_check')
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -47,7 +47,7 @@ def test_gluster_empty_host_validation_check():
     odpo.driver_close(driver)
 
 def test_gluster_fqdn_validation_check():
-    odpo.setupLogFile("test_gluster_fqdn_validation_check")
+    odpo.setupLogFile('test_gluster_fqdn_validation_check')
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -73,7 +73,7 @@ def test_gluster_fqdn_validation_check():
     odpo.driver_close(driver)
 
 def test_gluster_volume_validation_check():
-    odpo.setupLogFile("test_gluster_volume_validation_check")
+    odpo.setupLogFile('test_gluster_volume_validation_check')
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -97,7 +97,7 @@ def test_gluster_volume_validation_check():
     odpo.driver_close(driver)
 
 def test_gluster_vdo_present():
-    odpo.setupLogFile("test_gluster_vdo_present")
+    odpo.setupLogFile('test_gluster_vdo_present')
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -120,7 +120,7 @@ def test_gluster_vdo_present():
     odpo.driver_close(driver)
 
 def test_gluster_single_node_deployment_fail_check():
-    odpo.setupLogFile("test_gluster_single_node_deployment_fail_check")
+    odpo.setupLogFile('test_gluster_single_node_deployment_fail_check')
     driver = odpo.setup()
     odpo.open_page(driver)
     odpo.login(driver)
@@ -144,3 +144,50 @@ def test_gluster_single_node_deployment_fail_check():
     odpo.spinnerCheck(driver)
     odpo.deploymentFailCheck(driver)
     odpo.driver_close(driver)
+
+def test_gluster_three_node_deployment_check():
+    odpo.setupLogFile('test_gluster_three_node_deployment_check')
+    driver = odpo.setup()
+    odpo.open_page(driver)
+    odpo.login(driver)
+    odpo.time_sleep(30)
+    odpo.switchFrame(driver, odpo.heFrame)
+    odpo.assertHostedEngine(driver)
+    odpo.time_sleep(10)
+    odpo.startGlusterDeployment(driver)
+    odpo.startThreeNodeWizard(driver)
+    odpo.sendHostValuesForThreeNodeDep(driver, 'tendrl25.lab.eng.blr.redhat.com', 'tendrl26.lab.eng.blr.redhat.com', 'tendrl27.lab.eng.blr.redhat.com')
+    odpo.wizardNextClick(driver)
+    odpo.fqdnAssertCheck(driver)
+    odpo.handleSameFqdnAsHostCheck(driver)
+    odpo.wizardNextClick(driver)
+    odpo.packageAssertCheck(driver)
+    odpo.wizardNextClick(driver)
+    odpo.volumeAssertCheck(driver, False)
+    odpo.wizardNextClick(driver)
+    odpo.raidAssertCheck(driver)
+    odpo.changeBrickDetails(driver)
+    odpo.wizardNextClick(driver)
+    odpo.assertPreview(driver)
+    odpo.time_sleep(30)
+    odpo.deployGluster(driver)
+    odpo.spinnerCheck(driver)
+    odpo.deploymentSuccessCheck(driver)
+    odpo.continueToHostedEngineButtonClick(driver)
+    odpo.spinnerCheck(driver)
+    odpo.addVmFqdn(driver)
+    odpo.addVmFqdnMacAdd(driver)
+    odpo.validateVmFqdn(driver)
+    odpo.addVmPassword(driver)
+    odpo.time_sleep(60)
+    odpo.heWizardNextClick(driver)
+    odpo.addHePassword(driver)
+    odpo.heWizardNextClick(driver)
+    odpo.time_sleep(30)
+    odpo.prepareVmDeployment(driver)
+    odpo.prepareVmSpinnerCheck(driver)
+    odpo.heWizardNextClick(driver)
+    odpo.changeHeDiskSize(driver)
+    odpo.heWizardNextClick(driver)
+    odpo.time_sleep(30)
+    odpo.heDeployment(driver)

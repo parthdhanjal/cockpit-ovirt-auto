@@ -10,13 +10,13 @@ from selenium.webdriver.support import expected_conditions as EC
 
 class oVirtDashboardPageObjects():
 
-    URL = ""
+    URL = "https://tendrl25.lab.eng.blr.redhat.com:9090"
     ACCEPT_UNTRUSTED_CERTS = True
 
     loginUserInput = "login-user-input"
     loginUserInputValue = "root"
     loginPasswordInput = "login-password-input"
-    loginPasswordInputValue = ""
+    loginPasswordInputValue = "redhat123"
     loginButton = "login-button"
 
     heFrame = 1
@@ -84,6 +84,24 @@ class oVirtDashboardPageObjects():
     RaidTypeDropDownText = "RAID 6"
     RaidTypeDropDownTextAlter = "JBOD"
 
+    device1Input = ".ansible-wizard-bricks-row:nth-child(2) > .col-md-1:nth-child(2) .form-control"
+    device1InputValue = "/dev/sdb1"
+
+    device2Input = ".ansible-wizard-bricks-row:nth-child(3) > .col-md-1:nth-child(2) .form-control"
+    device2InputValue = "/dev/sdb1"
+
+    device3Input = ".ansible-wizard-bricks-row:nth-child(4) > .col-md-1:nth-child(2) .form-control"
+    device3InputValue = "/dev/sdb1"
+
+    size1Input = ".ansible-wizard-bricks-row:nth-child(2) > .col-md-1:nth-child(3) .form-control"
+    size1InputValue = "200"
+
+    size2Input = ".ansible-wizard-bricks-row:nth-child(3) > .col-md-1:nth-child(3) .form-control"
+    size2InputValue = "200"
+
+    size3Input = ".ansible-wizard-bricks-row:nth-child(4) > .col-md-1:nth-child(3) .form-control"
+    size3InputValue = "200"
+
     vdoCheckBox = ".ansible-wizard-bricks-row:nth-child(2) > .col-md-1:nth-child(6) > .ansible-wizard-thinp-checkbox"
     h1Size = ".ansible-wizard-bricks-row:nth-child(2) > .col-md-1:nth-child(3) .form-control"
     h1VdoSize = ".ansible-wizard-bricks-row:nth-child(2) > .col-md-1:nth-child(7) .form-control"
@@ -100,8 +118,42 @@ class oVirtDashboardPageObjects():
 
     spinner = ".spinner"
 
+    DeploymentMsgSuccess = "div:nth-child(1) > span:nth-child(2)"
+    DeploymentMsgSuccessText = "Successfully deployed Gluster"
+
     DeploymentMsgFail = "div:nth-child(1) > span:nth-child(2)"
     DeploymentMsgFailText = "Deployment failed"
+
+    continueToHostedEngine = ".blank-slate-pf-main-action"
+    continueToHostedEngineText = "Continue to Hosted Engine Deployment"
+    continueToHostedEngineButtonSelector = ".btn-lg"
+
+    vmFqdnInput = "he-engine-fqdn-input"
+    vmFqdnInputValue = "tendrl-engine5.lab.eng.blr.redhat.com"
+
+    vmFqdnSpinner = ".form-group:nth-child(2) .spinner"
+    vmFqdnValidateMsg = "he-validating-engine-fqdn-msg"
+
+    vmFqdnMacAddInput = "he-engine-mac-address-input"
+    vmFqdnMacAddInputValue = "00:16:3e:65:f8:3b"
+
+    vmPasswordInput = "he-cloudinit-root-pwd-input"
+    vmPasswordInputValue = "test123"
+
+    heWizardNextButton = ".btn:nth-child(3)"
+
+    hePasswordInput = "he-admin-password-input"
+    hePasswordInputValue = "test123"
+
+    prepareVmButton = ".btn:nth-child(4)"
+    prepareVmSpinner = ".deployment-status-spinner"
+
+    advanceDropDownText = "Advanced"
+
+    heDiskSizeInput = ".form-group:nth-child(1) > .he-text-with-units > .form-control"
+    heDiskSizeInputValue = 70
+
+    heDeploymentButton = ".btn:nth-child(4)"
 
     def time_sleep(self, sleepTime):
         time.sleep(sleepTime)
@@ -112,7 +164,7 @@ class oVirtDashboardPageObjects():
         except:
             print("Directory already exists")
         finally:
-            fileName = "test_logs/"+filename+".log"
+            fileName = 'test_logs/'+filename+'.log'
             exists = os.path.isfile(fileName)
             if exists:
                 print("Creating backup of existing log file")
@@ -121,11 +173,11 @@ class oVirtDashboardPageObjects():
                 os.rename(fileName,fileName+"_"+timestamp)
                 print("Created backup file: ", fileName+"_"+timestamp)
                 print("Creating log file:", fileName)
-                logging.basicConfig(filename=fileName, filemode="w+", level=logging.DEBUG)
+                logging.basicConfig(level=logging.DEBUG, filename=fileName, filemode="a", format='%(asctime)s - %(levelname)s - %(message)s')
                 logging.info("Starting test %s", fileName)
             else:
                 print("No existing log file found, creating log file: ", fileName)
-                logging.basicConfig(filename=fileName, filemode="w+", level=logging.DEBUG)
+                logging.basicConfig(level=logging.DEBUG, filename=fileName, filemode="a", format='%(asctime)s - %(levelname)s - %(message)s')
                 logging.info("Starting test %s", fileName)
 
     def setup(self):
@@ -297,6 +349,30 @@ class oVirtDashboardPageObjects():
         except:
             logging.error("Unable to change Raid type")
 
+    def changeBrickDetails(self, driver):
+        try:
+            logging.info("Changing Brick Details")
+            device1 = driver.find_element_by_css_selector(self.device1Input)
+            device1.clear()
+            device1.send_keys(self.device1InputValue)
+            device2 = driver.find_element_by_css_selector(self.device2Input)
+            device2.clear()
+            device2.send_keys(self.device2InputValue)
+            device3 = driver.find_element_by_css_selector(self.device3Input)
+            device3.clear()
+            device3.send_keys(self.device3InputValue)
+            size1 = driver.find_element_by_css_selector(self.size1Input)
+            size1.clear()
+            size1.send_keys(self.size1InputValue)
+            size2 = driver.find_element_by_css_selector(self.size2Input)
+            size2.clear()
+            size2.send_keys(self.size2InputValue)
+            size3 = driver.find_element_by_css_selector(self.size3Input)
+            size3.clear()
+            size3.send_keys(self.size3InputValue)
+        except:
+            logging.error("Unable to change brick details")
+
     def assertPreview(self, driver):
         try:
             logging.info("Preview Assert")
@@ -325,6 +401,14 @@ class oVirtDashboardPageObjects():
                 logging.info("check: ")
         except:
             logging.error("Element not visible")
+
+    def deploymentSuccessCheck(self, driver):
+        try:
+            logging.info("Checking for deployment success message")
+            DeploymentMsg = driver.find_element_by_css_selector(self.DeploymentMsgSuccess)
+            assert DeploymentMsg.text == self.DeploymentMsgSuccessText
+        except:
+            logging.error("Unable to find deployment fail message")
 
     def deploymentFailCheck(self, driver):
         try:
@@ -435,6 +519,111 @@ class oVirtDashboardPageObjects():
 
         except:
             logging.error("VDO not present")
+
+    def continueToHostedEngineButtonClick(self, driver):
+        try:
+            logging.info("Checking for successful Gluster Deployment")
+            continueToHostedEngine = driver.find_element_by_css_selector(self.continueToHostedEngine)
+            assert continueToHostedEngine.text == self.continueToHostedEngineText
+        except:
+            logging.error("Gluster Deployment not successful")
+        try:
+            logging.info("Clicking continue to hosted engine button")
+            continueToHostedEngineButton = driver.find_element_by_css_selector(self.continueToHostedEngineButtonSelector)
+            continueToHostedEngineButton.click()
+        except:
+            logging.error("Error clicking continue to hosted engine button")
+
+    def addVmFqdn(self, driver):
+        try:
+            logging.info("Adding a FQDN")
+            vmFqdn = driver.find_element_by_id(self.vmFqdnInput)
+            vmFqdn.send_keys(self.vmFqdnInputValue)
+        except:
+            logging.error("Error adding VM FQDN")
+
+    def validateVmFqdn(self, driver):
+        try:
+            logging.info("Validating VM FQDN")
+            vmFqdnSpinner = driver.find_element_by_css_selector(self.vmFqdnSpinner)
+        except:
+            logging.error("Validating spinner element not found")
+        try:
+            while vmFqdnSpinner.is_displayed():
+                logging.info("check vmFqdnSpinner: ")
+        except:
+            logging.error("Element not visible")
+
+    def addVmFqdnMacAdd(self, driver):
+        try:
+            logging.info("Adding VM FQDN MAC address")
+            vmFqdnMacAdd = driver.find_element_by_id(self.vmFqdnMacAddInput)
+            vmFqdnMacAdd.clear()
+            vmFqdnMacAdd.send_keys(self.vmFqdnMacAddInputValue)
+        except:
+            logging.error("Error adding VM FQDN MAC address")
+
+    def addVmPassword(self, driver):
+        try:
+            logging.info("Adding VM password")
+            vmPassword = driver.find_element_by_id(self.vmPasswordInput)
+            vmPassword.send_keys(self.vmPasswordInputValue)
+        except:
+            logging.error("Error adding VM password")
+
+    def heWizardNextClick(self, driver):
+        try:
+            logging.info("Clicking Next Button")
+            driver.find_element_by_css_selector(self.heWizardNextButton).click()
+        except:
+            logging.error("Error Clicking Next button")
+
+    def addHePassword(self, driver):
+        try:
+            logging.info("Adding HE Password")
+            hePassword = driver.find_element_by_id(self.hePasswordInput)
+            hePassword.send_keys(self.hePasswordInputValue)
+        except:
+            logging.error("Error adding HE password")
+
+    def prepareVmDeployment(self, driver):
+        try:
+            logging.info("Preparing VM")
+            prepareVm = driver.find_element_by_css_selector(self.prepareVmButton)
+            prepareVm.click()
+        except:
+            logging.error("Error deploying prepare VM script")
+
+    def prepareVmSpinnerCheck(self, driver):
+        try:
+            logging.info("Checking for spinner element")
+            spinner = driver.find_element_by_css_selector(self.prepareVmSpinner)
+        except:
+            logging.error("Unable to find Spinner Element")
+        try:
+            while spinner.is_displayed():
+                logging.info("check: ")
+        except:
+            logging.error("Element not visible")
+
+    def changeHeDiskSize(self, driver):
+        try:
+            logging.info("Changing HE Disk Size")
+            advanceDropDown = driver.find_element_by_link_text(self.advanceDropDownText)
+            advanceDropDown.click()
+            heDiskSize = driver.find_element_by_css_selector(self.heDiskSizeInput)
+            heDiskSize.clear()
+            heDiskSize.send_keys(self.heDiskSizeInputValue)
+        except:
+            logging.error("Unable to change HE Disk Size")
+
+    def heDeployment(self, driver):
+        try:
+            logging.info("Deploying HE")
+            heDeploymentButtonClick = driver.find_element_by_css_selector(self.heDeploymentButton)
+            heDeploymentButtonClick.click()
+        except:
+            logging.error("Unable to locate HE deployment button")
 
     def driver_close(self, driver):
         logging.info("Closing driver and quiting")
